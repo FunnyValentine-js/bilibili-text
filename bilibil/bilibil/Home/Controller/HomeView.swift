@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 
 /**
  * @file HomeView.swift
@@ -29,45 +30,7 @@ import SwiftUI
  * @property {Array} sampleVideos 示例视频数据。
  */
 struct HomeView: View {
-    @State private var dbManager = DatabaseManager()
-    @State private var allVideos: [(id: Int, name: String, coverImage: String)] = []
-    @State private var displayedVideos: [(id: Int, name: String, coverImage: String)] = []
-    @State private var selectedTab = 1
-    @State private var offset: CGFloat = 0
-    @State private var currentPage = 0
-    @State private var hasMoreVideos = true
-    private let pageSize = 10 // 修改为10，因为一行两个视频，5行就是10个视频
-    
-    private let tabs = [
-        (id: 0, name: "直播"),
-        (id: 1, name: "推荐"),
-        (id: 2, name: "热门"),
-        (id: 3, name: "动画"),
-        (id: 4, name: "影视")
-    ]
-    
-    private let sampleVideos = [
-        (name: "Swift基础语法详解", coverImage: "swift"),
-        (name: "UIKit框架实战", coverImage: "uikit"),
-        (name: "Firebase后端集成", coverImage: "flame"),
-        (name: "Apple Pay集成教程", coverImage: "apple.pay"),
-        (name: "HealthKit数据处理", coverImage: "heart.fill"),
-        (name: "地图应用开发", coverImage: "map"),
-        (name: "游戏开发基础", coverImage: "gamecontroller"),
-        (name: "自动化测试技巧", coverImage: "checkmark.circle"),
-        (name: "SwiftUI动画特效", coverImage: "sparkles"),
-        (name: "App性能优化", coverImage: "speedometer"),
-        (name: "多语言支持实现", coverImage: "globe"),
-        (name: "蓝牙设备连接", coverImage: "wave.3.right.circle"),
-        (name: "PDF文件处理", coverImage: "doc.text"),
-        (name: "图像识别技术", coverImage: "eye"),
-        (name: "推送通知设置", coverImage: "bell"),
-        (name: "自定义UI组件", coverImage: "square.and.pencil"),
-        (name: "网络请求优化", coverImage: "network"),
-        (name: "iOS隐私保护", coverImage: "lock.shield"),
-        (name: "应用内购买实现", coverImage: "cart"),
-        (name: "WatchKit开发入门", coverImage: "applewatch")
-    ]
+    @StateObject private var viewModel = HomeViewModel()
     
     var body: some View {
         NavigationView {
@@ -75,7 +38,7 @@ struct HomeView: View {
                 /**
                  * 顶部搜索栏，点击跳转到搜索页面。
                  */
-                NavigationLink(destination: SearchView(dbManager: dbManager)) {
+                NavigationLink(destination: SearchView(dbManager: viewModel.dbManager)) {
                     HStack {
                         Image(systemName: "magnifyingglass")
                             .foregroundColor(.gray)
@@ -96,13 +59,13 @@ struct HomeView: View {
                  */
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 20) {
-                        ForEach(tabs, id: \.id) { tab in
+                        ForEach(viewModel.tabs, id: \.id) { tab in
                             VStack {
                                 Text(tab.name)
-                                    .font(.system(size: 16, weight: selectedTab == tab.id ? .bold : .regular))
-                                    .foregroundColor(selectedTab == tab.id ? .black : .gray)
+                                    .font(.system(size: 16, weight: viewModel.selectedTab == tab.id ? .bold : .regular))
+                                    .foregroundColor(viewModel.selectedTab == tab.id ? .black : .gray)
                                 
-                                if selectedTab == tab.id {
+                                if viewModel.selectedTab == tab.id {
                                     Color.blue
                                         .frame(height: 3)
                                         .cornerRadius(1.5)
@@ -114,7 +77,7 @@ struct HomeView: View {
                             .frame(width: 60)
                             .onTapGesture {
                                 withAnimation {
-                                    selectedTab = tab.id
+                                    viewModel.selectedTab = tab.id
                                 }
                             }
                         }
@@ -129,13 +92,13 @@ struct HomeView: View {
                  * 内容区域，分区内容通过TabView切换。
                  * 推荐区支持分页加载视频。
                  */
-                TabView(selection: $selectedTab) {
+                TabView(selection: $viewModel.selectedTab) {
                     LiveContentView().tag(0)
                     
                     ScrollView {
                         // 使用LazyVGrid实现视频卡片瀑布流布局
                         LazyVGrid(columns: [GridItem(), GridItem()], spacing: 20) {
-                            ForEach(displayedVideos, id: \.id) { video in
+                            ForEach(viewModel.displayedVideos, id: \.id) { video in
                                 NavigationLink(destination: VideoDetailView(video: video)) {
                                     VideoCardView(
                                         title: video.name,
@@ -150,11 +113,11 @@ struct HomeView: View {
                         }
                         
                         // 加载更多指示器
-                        if hasMoreVideos {
+                        if viewModel.hasMoreVideos {
                             ProgressView()
                                 .padding()
                                 .onAppear {
-                                    loadMoreVideos()
+                                    viewModel.loadMoreVideos()
                                 }
                         } else {
                             Text("已经滑到底部了")
@@ -171,80 +134,18 @@ struct HomeView: View {
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
                 .frame(height: UIScreen.main.bounds.height - 240)
-                .offset(x: offset)
+                .offset(x: viewModel.offset)
                 .gesture(
                     DragGesture()
-                        .onChanged { offset = $0.translation.width }
-                        .onEnded { handleSwipe($0) }
+                        .onChanged { viewModel.offset = $0.translation.width }
+                        .onEnded { viewModel.handleSwipe($0) }
                 )
             }
             .navigationTitle("首页")
             .navigationBarHidden(true)
             .onAppear {
-                if dbManager.getAllVideos().isEmpty {
-                    addSampleVideos()
-                }
-                refreshVideos()
+                viewModel.onAppear()
             }
-        }
-    }
-    
-    /**
-     * @function handleSwipe
-     * @description 处理分区Tab的左右滑动切换。
-     * @param {DragGesture.Value} value 拖拽手势的值。
-     */
-    private func handleSwipe(_ value: DragGesture.Value) {
-        withAnimation {
-            if value.translation.width < -100 && selectedTab < tabs.count - 1 {
-                selectedTab += 1
-            } else if value.translation.width > 100 && selectedTab > 0 {
-                selectedTab -= 1
-            }
-            offset = 0
-        }
-    }
-    
-    /**
-     * @function addSampleVideos
-     * @description 向数据库添加示例视频数据。
-     */
-    private func addSampleVideos() {
-        for video in sampleVideos {
-            dbManager.addVideo(name: video.name, coverImage: video.coverImage)
-        }
-    }
-    
-    /**
-     * @function refreshVideos
-     * @description 刷新视频列表，重置分页。
-     */
-    private func refreshVideos() {
-        allVideos = dbManager.getAllVideos()
-        currentPage = 0
-        hasMoreVideos = allVideos.count > pageSize
-        displayedVideos = Array(allVideos.prefix(pageSize))
-    }
-    
-    /**
-     * @function loadMoreVideos
-     * @description 分页加载更多视频，模拟网络延迟。
-     */
-    private func loadMoreVideos() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            let nextPage = currentPage + 1
-            let startIndex = nextPage * pageSize
-            guard startIndex < allVideos.count else {
-                hasMoreVideos = false
-                return
-            }
-            
-            let endIndex = min(startIndex + pageSize, allVideos.count)
-            let newVideos = Array(allVideos[startIndex..<endIndex])
-            
-            displayedVideos.append(contentsOf: newVideos)
-            currentPage = nextPage
-            hasMoreVideos = endIndex < allVideos.count
         }
     }
 }
@@ -505,6 +406,6 @@ struct SearchView: View {
     }
 }
 
-#Preview {
-    HomeView()
-}
+//#Preview {
+//    HomeView()
+//}
