@@ -7,6 +7,24 @@
 
 import SwiftUI
 
+/**
+ * @file FavoriteDetailView.swift
+ * @description 收藏夹详情页面，展示收藏夹内所有视频并支持编辑删除。
+ * @author SOSD_M1_2
+ * @date 2025/4/25
+ */
+
+/**
+ * @struct FavoriteDetailView
+ * @description 收藏夹详情主页面，包含视频列表、编辑删除功能。
+ * @property {Int} favoriteId 收藏夹ID。
+ * @property {String} title 收藏夹名称。
+ * @property {DatabaseManager} dbManager 数据库管理器。
+ * @property {Array} videos 收藏夹内视频列表。
+ * @property {Bool} isEditing 是否处于编辑模式。
+ * @property {Bool} showingDeleteAlert 是否显示删除确认弹窗。
+ * @property {Int?} videoToDelete 待删除视频ID。
+ */
 struct FavoriteDetailView: View {
     let favoriteId: Int
     let title: String
@@ -20,7 +38,9 @@ struct FavoriteDetailView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 0) {
-                // 顶部收藏夹名称
+                /**
+                 * 顶部收藏夹名称。
+                 */
                 HStack {
                     Text(title)
                         .font(.title)
@@ -35,7 +55,9 @@ struct FavoriteDetailView: View {
                 Divider()
                     .padding(.horizontal)
                 
-                // 视频列表
+                /**
+                 * 视频列表，支持编辑删除。
+                 */
                 LazyVStack(spacing: 16) {
                     ForEach(videos, id: \.id) { video in
                         HStack {
@@ -95,10 +117,19 @@ struct FavoriteDetailView: View {
         }
     }
     
+    /**
+     * @function refreshVideos
+     * @description 刷新收藏夹内视频列表。
+     */
     private func refreshVideos() {
         videos = dbManager.getVideosInFavoriteList(favoriteId: favoriteId)
     }
     
+    /**
+     * @function deleteVideo
+     * @description 从收藏夹中删除指定视频。
+     * @param {Int} videoId 视频ID。
+     */
     private func deleteVideo(videoId: Int) {
         if dbManager.removeVideoFromFavorite(videoId: videoId, favoriteId: favoriteId) {
             refreshVideos()

@@ -7,6 +7,24 @@
 
 import SwiftUI
 
+/**
+ * @file FavoriteSelectionView.swift
+ * @description 收藏夹选择与管理弹窗，支持添加/移除视频到收藏夹。
+ * @author SOSD_M1_2
+ * @date 2025/4/25
+ */
+
+/**
+ * @struct FavoriteSelectionView
+ * @description 收藏夹选择与管理弹窗，支持新建收藏夹、添加/移除视频。
+ * @property {Int} videoId 当前操作的视频ID。
+ * @property {Array} favoriteLists 收藏夹列表。
+ * @property {Bool} isVideoFavorited 当前视频是否已被收藏。
+ * @property {DatabaseManager} dbManager 数据库管理器。
+ * @property {Function} onComplete 操作完成回调。
+ * @property {String} newFavoriteName 新建收藏夹名称。
+ * @property {Bool} showingAddFavorite 是否显示新建收藏夹弹窗。
+ */
 struct FavoriteSelectionView: View {
     let videoId: Int
     @State var favoriteLists: [(id: Int, name: String)]
@@ -96,10 +114,21 @@ struct FavoriteSelectionView: View {
         }
     }
     
+    /**
+     * @function isVideoInFavorite
+     * @description 判断当前视频是否在指定收藏夹中。
+     * @param {Int} listId 收藏夹ID。
+     * @returns {Bool}
+     */
     private func isVideoInFavorite(listId: Int) -> Bool {
         return dbManager.getVideosInFavoriteList(favoriteId: listId).contains { $0.id == videoId }
     }
     
+    /**
+     * @function toggleVideoInFavorite
+     * @description 切换视频在收藏夹中的状态。
+     * @param {Int} listId 收藏夹ID。
+     */
     private func toggleVideoInFavorite(listId: Int) {
         if isVideoInFavorite(listId: listId) {
             removeFromFavorite(listId: listId)
@@ -108,6 +137,11 @@ struct FavoriteSelectionView: View {
         }
     }
     
+    /**
+     * @function addToFavorite
+     * @description 添加视频到收藏夹。
+     * @param {Int} listId 收藏夹ID。
+     */
     private func addToFavorite(listId: Int) {
         if dbManager.addVideoToFavorite(videoId: videoId, favoriteId: listId) {
             if let listName = favoriteLists.first(where: { $0.id == listId })?.name {
@@ -118,6 +152,11 @@ struct FavoriteSelectionView: View {
         }
     }
     
+    /**
+     * @function removeFromFavorite
+     * @description 从收藏夹移除视频。
+     * @param {Int} listId 收藏夹ID。
+     */
     private func removeFromFavorite(listId: Int) {
         if dbManager.removeVideoFromFavorite(videoId: videoId, favoriteId: listId) {
             if let listName = favoriteLists.first(where: { $0.id == listId })?.name {
@@ -128,6 +167,10 @@ struct FavoriteSelectionView: View {
         }
     }
     
+    /**
+     * @function createNewFavorite
+     * @description 新建收藏夹并自动添加当前视频。
+     */
     private func createNewFavorite() {
         let newId = dbManager.createFavoriteList(name: newFavoriteName)
         if newId != -1 {

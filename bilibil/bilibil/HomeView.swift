@@ -7,6 +7,27 @@
 
 import SwiftUI
 
+/**
+ * @file HomeView.swift
+ * @description 首页主界面，包含顶部搜索、分区Tab、视频推荐等内容。
+ * @author SOSD_M1_2
+ * @date 2025/4/25
+ */
+
+/**
+ * @struct HomeView
+ * @description 首页视图，展示推荐视频、分区切换、顶部搜索等。
+ * @property {DatabaseManager} dbManager 数据库管理器，用于视频数据的增删查。
+ * @property {Array} allVideos 所有视频数据。
+ * @property {Array} displayedVideos 当前展示的视频数据（分页）。
+ * @property {Int} selectedTab 当前选中的分区Tab。
+ * @property {CGFloat} offset 滑动偏移量，用于手势切换分区。
+ * @property {Int} currentPage 当前分页页码。
+ * @property {Bool} hasMoreVideos 是否还有更多视频可加载。
+ * @property {Int} pageSize 每页视频数量。
+ * @property {Array} tabs 分区Tab配置。
+ * @property {Array} sampleVideos 示例视频数据。
+ */
 struct HomeView: View {
     @State private var dbManager = DatabaseManager()
     @State private var allVideos: [(id: Int, name: String, coverImage: String)] = []
@@ -51,7 +72,9 @@ struct HomeView: View {
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
-                // 搜索栏按钮
+                /**
+                 * 顶部搜索栏，点击跳转到搜索页面。
+                 */
                 NavigationLink(destination: SearchView(dbManager: dbManager)) {
                     HStack {
                         Image(systemName: "magnifyingglass")
@@ -68,7 +91,9 @@ struct HomeView: View {
                 }
                 .buttonStyle(PlainButtonStyle())
                 
-                // 顶部导航栏分区
+                /**
+                 * 顶部分区Tab栏，支持横向滑动和点击切换。
+                 */
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 20) {
                         ForEach(tabs, id: \.id) { tab in
@@ -100,12 +125,15 @@ struct HomeView: View {
                 .frame(height: 40)
                 .background(Color(.systemBackground))
                 
-                // 内容区域
+                /**
+                 * 内容区域，分区内容通过TabView切换。
+                 * 推荐区支持分页加载视频。
+                 */
                 TabView(selection: $selectedTab) {
                     LiveContentView().tag(0)
                     
                     ScrollView {
-                        // 修改为使用LazyVGrid来实现一行两个视频卡片的布局
+                        // 使用LazyVGrid实现视频卡片瀑布流布局
                         LazyVGrid(columns: [GridItem(), GridItem()], spacing: 20) {
                             ForEach(displayedVideos, id: \.id) { video in
                                 NavigationLink(destination: VideoDetailView(video: video)) {
@@ -115,7 +143,7 @@ struct HomeView: View {
                                         views: "\(Int.random(in: 1000...10000))观看",
                                         coverImage: video.coverImage
                                     )
-                                    .frame(maxWidth: .infinity) // 让视频卡片宽度自适应
+                                    .frame(maxWidth: .infinity)
                                 }
                                 .buttonStyle(PlainButtonStyle())
                             }
@@ -161,6 +189,11 @@ struct HomeView: View {
         }
     }
     
+    /**
+     * @function handleSwipe
+     * @description 处理分区Tab的左右滑动切换。
+     * @param {DragGesture.Value} value 拖拽手势的值。
+     */
     private func handleSwipe(_ value: DragGesture.Value) {
         withAnimation {
             if value.translation.width < -100 && selectedTab < tabs.count - 1 {
@@ -172,12 +205,20 @@ struct HomeView: View {
         }
     }
     
+    /**
+     * @function addSampleVideos
+     * @description 向数据库添加示例视频数据。
+     */
     private func addSampleVideos() {
         for video in sampleVideos {
             dbManager.addVideo(name: video.name, coverImage: video.coverImage)
         }
     }
     
+    /**
+     * @function refreshVideos
+     * @description 刷新视频列表，重置分页。
+     */
     private func refreshVideos() {
         allVideos = dbManager.getAllVideos()
         currentPage = 0
@@ -185,8 +226,12 @@ struct HomeView: View {
         displayedVideos = Array(allVideos.prefix(pageSize))
     }
     
+    /**
+     * @function loadMoreVideos
+     * @description 分页加载更多视频，模拟网络延迟。
+     */
     private func loadMoreVideos() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { // 模拟网络延迟
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
             let nextPage = currentPage + 1
             let startIndex = nextPage * pageSize
             guard startIndex < allVideos.count else {

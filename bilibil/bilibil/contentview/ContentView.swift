@@ -1,5 +1,22 @@
+/**
+ * @file ContentView.swift
+ * @description 我的页面，展示收藏夹列表及添加功能。
+ * @author SOSD_M1_2
+ * @date 2025/4/25
+ */
 import SwiftUI
 
+/**
+ * @struct ContentView
+ * @description 我的页面主视图，展示收藏夹及添加入口。
+ * @property {DatabaseManager} dbManager 数据库管理器。
+ * @property {Array} favoriteLists 收藏夹列表。
+ * @property {Bool} showingAddFavoriteList 是否显示添加收藏夹弹窗。
+ * @property {Bool} showingAddVideo 是否显示添加视频弹窗。
+ * @property {String} newFavoriteListName 新建收藏夹名称。
+ * @property {String} newVideoName 新建视频名称。
+ * @property {String} newVideoCover 新建视频封面。
+ */
 struct ContentView: View {
     @State private var dbManager = DatabaseManager()
     @State private var favoriteLists: [(id: Int, name: String)] = []
@@ -12,27 +29,31 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
             ScrollView {
-                            VStack(alignment: .leading, spacing: 0) {
-                                // 标题
-                                Text("我的收藏夹")
-                                    .font(.headline)
-                                    .padding(.horizontal)
-                                    .padding(.top, 16)
-                                    .padding(.bottom, 8)
-                                
-                                // 单列收藏夹列表
-                                LazyVStack(spacing: 16) {
-                                    ForEach(favoriteLists, id: \.id) { list in
-                                        NavigationLink(destination: FavoriteDetailView(favoriteId: list.id, title: list.name, dbManager: dbManager)) {
-                                            FavoriteListRow(favoriteId: list.id, title: list.name, dbManager: dbManager)
-                                        }
-                                        .buttonStyle(PlainButtonStyle())
-                                    }
-                                }
-                                .padding(.top, 8)
-                                .padding(.bottom, 30)
+                VStack(alignment: .leading, spacing: 0) {
+                    /**
+                     * 页面标题。
+                     */
+                    Text("我的收藏夹")
+                        .font(.headline)
+                        .padding(.horizontal)
+                        .padding(.top, 16)
+                        .padding(.bottom, 8)
+                    
+                    /**
+                     * 收藏夹列表，点击可进入详情。
+                     */
+                    LazyVStack(spacing: 16) {
+                        ForEach(favoriteLists, id: \.id) { list in
+                            NavigationLink(destination: FavoriteDetailView(favoriteId: list.id, title: list.name, dbManager: dbManager)) {
+                                FavoriteListRow(favoriteId: list.id, title: list.name, dbManager: dbManager)
                             }
+                            .buttonStyle(PlainButtonStyle())
                         }
+                    }
+                    .padding(.top, 8)
+                    .padding(.bottom, 30)
+                }
+            }
             .navigationTitle("收藏夹")
             .toolbar {
                 // 第一个加号 - 添加视频
@@ -49,7 +70,9 @@ struct ContentView: View {
                     }
                 }
             }
-            // 添加视频的表单
+            /**
+             * 添加视频弹窗表单。
+             */
             .sheet(isPresented: $showingAddVideo) {
                 NavigationView {
                     Form {
@@ -78,7 +101,9 @@ struct ContentView: View {
                     }
                 }
             }
-            // 添加收藏夹的表单
+            /**
+             * 添加收藏夹弹窗表单。
+             */
             .sheet(isPresented: $showingAddFavoriteList) {
                 NavigationView {
                     Form {
@@ -112,6 +137,9 @@ struct ContentView: View {
     }
 }
 
+/**
+ * @description ContentView 预览。
+ */
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()

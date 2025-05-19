@@ -7,6 +7,21 @@
 
 import SwiftUI
 
+/**
+ * @file DetailVideoCard.swift
+ * @description 视频详情页中的视频卡片组件。
+ * @author SOSD_M1_2
+ * @date 2025/4/25
+ */
+
+/**
+ * @struct DetailVideoCard
+ * @description 视频卡片组件，展示视频封面、标题、作者、播放量。
+ * @property {String} title 视频标题。
+ * @property {String} author 作者。
+ * @property {String} views 播放量。
+ * @property {String} coverImage 封面图片（SF Symbol）。
+ */
 struct DetailVideoCard: View {
     let title: String
     let author: String
@@ -15,7 +30,9 @@ struct DetailVideoCard: View {
     
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
-            // Thumbnail
+            /**
+             * 视频封面缩略图。
+             */
             Image(systemName: coverImage)
                 .resizable()
                 .scaledToFill()
@@ -25,7 +42,9 @@ struct DetailVideoCard: View {
                 .foregroundColor(.white)
                 .background(Color.gray.opacity(0.3))
             
-            // Video info
+            /**
+             * 视频信息区：标题、作者、播放量。
+             */
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
                     .font(.subheadline)
