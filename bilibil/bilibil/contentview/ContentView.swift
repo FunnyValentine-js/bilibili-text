@@ -16,6 +16,8 @@ import SwiftUI
  * @property {String} newFavoriteListName 新建收藏夹名称。
  * @property {String} newVideoName 新建视频名称。
  * @property {String} newVideoCover 新建视频封面。
+ * @property {Bool} showLoginAlert 是否显示登录未实现提示。
+ * @property {Bool} showLoginSheet 是否显示登录页面。
  */
 struct ContentView: View {
     @State private var dbManager = DatabaseManager()
@@ -25,11 +27,34 @@ struct ContentView: View {
     @State private var newFavoriteListName = ""
     @State private var newVideoName = ""
     @State private var newVideoCover = ""
+    @State private var showLoginAlert = false
+    @State private var showLoginSheet = false
     
     var body: some View {
         NavigationView {
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
+                    /**
+                     * 登录按钮。
+                     */
+                    Button(action: {
+                        // 弹出登录页面
+                        showLoginSheet = true
+                    }) {
+                        Text("登录")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.blue)
+                            .cornerRadius(10)
+                            .padding(.horizontal)
+                            .padding(.top, 16)
+                    }
+                    .sheet(isPresented: $showLoginSheet) {
+                        LoginView()
+                    }
+                    
                     /**
                      * 页面标题。
                      */
@@ -54,7 +79,7 @@ struct ContentView: View {
                     .padding(.bottom, 30)
                 }
             }
-            .navigationTitle("收藏夹")
+            .navigationTitle("个人中心")
             .toolbar {
                 // 第一个加号 - 添加视频
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -140,8 +165,8 @@ struct ContentView: View {
 /**
  * @description ContentView 预览。
  */
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-    }
-}
+//struct ContentView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        ContentView()
+//    }
+//}
