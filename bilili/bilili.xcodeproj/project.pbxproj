@@ -12,28 +12,9 @@
 		D1EBD4782DE34C0000CE6CAB /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D1EBD4772DE34C0000CE6CAB /* libsqlite3.tbd */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXContainerItemProxy section */
-		D1EBD2D82DE06E8700CE6CAB /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D1EBD2BF2DE06E8500CE6CAB /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = D1EBD2C62DE06E8500CE6CAB;
-			remoteInfo = bilili;
-		};
-		D1EBD2E22DE06E8700CE6CAB /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D1EBD2BF2DE06E8500CE6CAB /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = D1EBD2C62DE06E8500CE6CAB;
-			remoteInfo = bilili;
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXFileReference section */
 		D1C4816A2DF6C40B00972468 /* libsqlite3.0.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.0.tbd; path = usr/lib/libsqlite3.0.tbd; sourceTree = SDKROOT; };
 		D1EBD2C72DE06E8500CE6CAB /* bilili.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = bilili.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		D1EBD2D72DE06E8700CE6CAB /* bililiTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = bililiTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		D1EBD2E12DE06E8700CE6CAB /* bililiUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = bililiUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D1EBD4772DE34C0000CE6CAB /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -41,16 +22,6 @@
 		D1EBD2C92DE06E8500CE6CAB /* bilili */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = bilili;
-			sourceTree = "<group>";
-		};
-		D1EBD2DA2DE06E8700CE6CAB /* bililiTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = bililiTests;
-			sourceTree = "<group>";
-		};
-		D1EBD2E42DE06E8700CE6CAB /* bililiUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = bililiUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -66,20 +37,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		D1EBD2D42DE06E8700CE6CAB /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D1EBD2DE2DE06E8700CE6CAB /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -87,8 +44,6 @@
 			isa = PBXGroup;
 			children = (
 				D1EBD2C92DE06E8500CE6CAB /* bilili */,
-				D1EBD2DA2DE06E8700CE6CAB /* bililiTests */,
-				D1EBD2E42DE06E8700CE6CAB /* bililiUITests */,
 				D1EBD4762DE34BFF00CE6CAB /* Frameworks */,
 				D1EBD2C82DE06E8500CE6CAB /* Products */,
 			);
@@ -98,8 +53,6 @@
 			isa = PBXGroup;
 			children = (
 				D1EBD2C72DE06E8500CE6CAB /* bilili.app */,
-				D1EBD2D72DE06E8700CE6CAB /* bililiTests.xctest */,
-				D1EBD2E12DE06E8700CE6CAB /* bililiUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -139,52 +92,6 @@
 			productReference = D1EBD2C72DE06E8500CE6CAB /* bilili.app */;
 			productType = "com.apple.product-type.application";
 		};
-		D1EBD2D62DE06E8700CE6CAB /* bililiTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = D1EBD2EE2DE06E8700CE6CAB /* Build configuration list for PBXNativeTarget "bililiTests" */;
-			buildPhases = (
-				D1EBD2D32DE06E8700CE6CAB /* Sources */,
-				D1EBD2D42DE06E8700CE6CAB /* Frameworks */,
-				D1EBD2D52DE06E8700CE6CAB /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				D1EBD2D92DE06E8700CE6CAB /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				D1EBD2DA2DE06E8700CE6CAB /* bililiTests */,
-			);
-			name = bililiTests;
-			packageProductDependencies = (
-			);
-			productName = bililiTests;
-			productReference = D1EBD2D72DE06E8700CE6CAB /* bililiTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
-		D1EBD2E02DE06E8700CE6CAB /* bililiUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = D1EBD2F12DE06E8700CE6CAB /* Build configuration list for PBXNativeTarget "bililiUITests" */;
-			buildPhases = (
-				D1EBD2DD2DE06E8700CE6CAB /* Sources */,
-				D1EBD2DE2DE06E8700CE6CAB /* Frameworks */,
-				D1EBD2DF2DE06E8700CE6CAB /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				D1EBD2E32DE06E8700CE6CAB /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				D1EBD2E42DE06E8700CE6CAB /* bililiUITests */,
-			);
-			name = bililiUITests;
-			packageProductDependencies = (
-			);
-			productName = bililiUITests;
-			productReference = D1EBD2E12DE06E8700CE6CAB /* bililiUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -197,14 +104,6 @@
 				TargetAttributes = {
 					D1EBD2C62DE06E8500CE6CAB = {
 						CreatedOnToolsVersion = 16.0;
-					};
-					D1EBD2D62DE06E8700CE6CAB = {
-						CreatedOnToolsVersion = 16.0;
-						TestTargetID = D1EBD2C62DE06E8500CE6CAB;
-					};
-					D1EBD2E02DE06E8700CE6CAB = {
-						CreatedOnToolsVersion = 16.0;
-						TestTargetID = D1EBD2C62DE06E8500CE6CAB;
 					};
 				};
 			};
@@ -226,28 +125,12 @@
 			projectRoot = "";
 			targets = (
 				D1EBD2C62DE06E8500CE6CAB /* bilili */,
-				D1EBD2D62DE06E8700CE6CAB /* bililiTests */,
-				D1EBD2E02DE06E8700CE6CAB /* bililiUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		D1EBD2C52DE06E8500CE6CAB /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D1EBD2D52DE06E8700CE6CAB /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D1EBD2DF2DE06E8700CE6CAB /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -264,34 +147,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		D1EBD2D32DE06E8700CE6CAB /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D1EBD2DD2DE06E8700CE6CAB /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		D1EBD2D92DE06E8700CE6CAB /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = D1EBD2C62DE06E8500CE6CAB /* bilili */;
-			targetProxy = D1EBD2D82DE06E8700CE6CAB /* PBXContainerItemProxy */;
-		};
-		D1EBD2E32DE06E8700CE6CAB /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = D1EBD2C62DE06E8500CE6CAB /* bilili */;
-			targetProxy = D1EBD2E22DE06E8700CE6CAB /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		D1EBD2E92DE06E8700CE6CAB /* Debug */ = {
@@ -469,74 +325,6 @@
 			};
 			name = Release;
 		};
-		D1EBD2EF2DE06E8700CE6CAB /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = fzu.bililiTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/bilili.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/bilili";
-			};
-			name = Debug;
-		};
-		D1EBD2F02DE06E8700CE6CAB /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = fzu.bililiTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/bilili.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/bilili";
-			};
-			name = Release;
-		};
-		D1EBD2F22DE06E8700CE6CAB /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = fzu.bililiUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = bilili;
-			};
-			name = Debug;
-		};
-		D1EBD2F32DE06E8700CE6CAB /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = fzu.bililiUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = bilili;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -554,24 +342,6 @@
 			buildConfigurations = (
 				D1EBD2EC2DE06E8700CE6CAB /* Debug */,
 				D1EBD2ED2DE06E8700CE6CAB /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		D1EBD2EE2DE06E8700CE6CAB /* Build configuration list for PBXNativeTarget "bililiTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				D1EBD2EF2DE06E8700CE6CAB /* Debug */,
-				D1EBD2F02DE06E8700CE6CAB /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		D1EBD2F12DE06E8700CE6CAB /* Build configuration list for PBXNativeTarget "bililiUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				D1EBD2F22DE06E8700CE6CAB /* Debug */,
-				D1EBD2F32DE06E8700CE6CAB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
