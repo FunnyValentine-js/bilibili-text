@@ -66,15 +66,10 @@ struct UpData: Decodable,Encodable {  // 确保遵守 Decodable 协议
     }
 }
 
-struct Favorite: Identifiable {
-    let id: String // 唯一标识符
-    let name: String // 收藏夹名称
-    var videos: [Video] // 收藏的视频数组
-    
-    // 初始化时，给定一个ID
-    init(id: String = UUID().uuidString, name: String, videos: [Video] = []) {
-        self.id = id
-        self.name = name
-        self.videos = videos
-    }
+struct VideoCollection: Identifiable {
+    let id: String
+    let name: String
+    let createdAt: Date
+    var videoCount: Int = 0 // 可以在ViewModel中计算
 }
+

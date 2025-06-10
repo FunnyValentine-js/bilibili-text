@@ -2,20 +2,15 @@ import SwiftUI
 import AVKit
 
 struct VideoDetailView: View {
+    @EnvironmentObject var viewModel: VideoViewModel
     let video: Video
     @State var isFollowing: Bool
     @State var isLiking: Bool
     @State var isDisliking: Bool
     @State var isCoining: Bool
     @State var isCollectwing: Bool
+    @State private var showCollectionSheet = false
     
-    @StateObject private var viewModel = VideoViewModel(
-        databasePath: NSSearchPathForDirectoriesInDomains(
-            .documentDirectory,
-            .userDomainMask,
-            true
-        ).first! + "/videos.db"
-    )
     @StateObject private var playerVM: PlayerViewModel
     @Environment(\.presentationMode) var presentationMode
     
@@ -28,7 +23,6 @@ struct VideoDetailView: View {
         self._isCollectwing = State(initialValue: isCollectwing)
         self._playerVM = StateObject(wrappedValue: PlayerViewModel(videoURL: "https://media.w3.org/2010/05/sintel/trailer.mp4"))
     }
-
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 5) {
@@ -232,19 +226,28 @@ struct VideoDetailView: View {
             
             Spacer()
             
+            //收藏按钮
+            // 更新收藏按钮
             Button(action: {
-                isCollectwing.toggle()
+                showCollectionSheet = true
             }) {
                 VStack {
-                    Image(systemName: "star.fill")
+                    Image(systemName: viewModel.isVideoInCollection(videoId: video.id) ? "star.fill" : "star")
                         .resizable()
                         .scaledToFit()
-                        .foregroundColor(isCollectwing ? Color.pink : Color.gray)
+                        .foregroundColor(viewModel.isVideoInCollection(videoId: video.id) ? .pink : .gray)
                         .frame(width: 30)
-                    Text(isCollectwing ? formatLikeCount(video.isCollectCount + 1) : formatLikeCount(video.isCollectCount))
+                    Text(formatLikeCount(viewModel.isVideoInCollection(videoId: video.id) ? video.isCollectCount + 1 : video.isCollectCount))
                         .font(.system(size: 10))
                         .frame(width: 30)
                 }
+            }
+            .sheet(isPresented: $showCollectionSheet) {
+                CollectionSelectionView(
+                    isPresented: $showCollectionSheet,
+                    videoId: video.id
+                )
+                .environmentObject(viewModel)
             }
             
             Spacer()

@@ -10,7 +10,7 @@ class VideoViewModel: ObservableObject {
     private var page: Int = 0
     private let triggerThreshold: CGFloat = 60
     private let maxDragOffset: CGFloat = 100
-    private var databaseManager: DatabaseManager
+    var databaseManager: DatabaseManager
     private var hasInitializedData = false
     
     // 初始化时传入数据库路径
@@ -136,5 +136,131 @@ class VideoViewModel: ObservableObject {
             return videos
         }
         return videos.filter { $0.title.localizedCaseInsensitiveContains(title) }
+    }
+}
+
+extension VideoViewModel {
+    // 保存视频到本地数据库
+    func saveVideoLocally(video: Video) {
+        databaseManager.insertVideos([video])
+        videos = databaseManager.fetchVideos()
+    }
+    
+    // 删除本地视频
+    func deleteLocalVideo(id: String) {
+        databaseManager.deleteVideo(id: id)
+        videos = databaseManager.fetchVideos()
+    }
+    
+    // 清空本地视频
+    func clearLocalVideos() {
+        databaseManager.clearAllVideos()
+        videos = []
+    }
+    
+    // 刷新本地视频列表
+    func refreshLocalVideos() {
+        videos = databaseManager.fetchVideos()
+    }
+}
+
+extension VideoViewModel {
+    // 收藏/取消收藏视频
+    func toggleVideoCollection(videoId: String, collectionId: String? = nil) -> Bool {
+        let defaultCollectionId = getDefaultCollectionId()
+        let targetCollectionId = collectionId ?? defaultCollectionId
+        
+        if databaseManager.isVideoInCollection(videoId: videoId, collectionId: targetCollectionId) {
+            return databaseManager.removeVideoFromCollection(videoId: videoId, collectionId: targetCollectionId)
+        } else {
+            return databaseManager.addVideoToCollection(videoId: videoId, collectionId: targetCollectionId)
+        }
+    }
+    
+    
+    // 获取收藏夹中的视频
+    func getCollectionVideos(collectionId: String) -> [Video] {
+        return databaseManager.getVideosInCollection(collectionId: collectionId)
+    }
+    
+}
+
+extension VideoViewModel {
+    // 获取默认收藏夹ID
+    func getDefaultCollectionId() -> String {
+        let collections = databaseManager.getCollections()
+        if let defaultCollection = collections.first(where: { $0.name == "默认收藏夹" }) {
+            return defaultCollection.id
+        }
+        // 理论上不会执行到这里，因为初始化时已经创建了默认收藏夹
+        databaseManager.addCollection(name: "默认收藏夹")
+        return databaseManager.getCollections().first!.id
+    }
+    
+    // 获取所有收藏夹（包含视频数量）
+    func getCollections() -> [VideoCollection] {
+        var collections = databaseManager.getCollections()
+        // 为每个收藏夹添加视频数量
+        for i in 0..<collections.count {
+            collections[i].videoCount = databaseManager.getVideosInCollection(collectionId: collections[i].id).count
+        }
+        return collections
+    }
+    
+    // 添加视频到默认收藏夹
+    func addToDefaultCollection(videoId: String) -> Bool {
+        let defaultCollectionId = getDefaultCollectionId()
+        return databaseManager.addVideoToCollection(videoId: videoId, collectionId: defaultCollectionId)
+    }
+    
+    // 从收藏夹移除视频
+    func removeFromCollection(videoId: String, collectionId: String? = nil) -> Bool {
+        let targetCollectionId = collectionId ?? getDefaultCollectionId()
+        return databaseManager.removeVideoFromCollection(videoId: videoId, collectionId: targetCollectionId)
+    }
+    
+    // 检查视频是否在收藏夹中
+    func isVideoInCollection(videoId: String, collectionId: String? = nil) -> Bool {
+        let targetCollectionId = collectionId ?? getDefaultCollectionId()
+        return databaseManager.isVideoInCollection(videoId: videoId, collectionId: targetCollectionId)
+    }
+}
+
+extension VideoViewModel {
+    // 获取所有收藏夹（排除当前视频已存在的收藏夹）
+    func getAvailableCollections(for videoId: String) -> [VideoCollection] {
+        let allCollections = getCollections()
+        return allCollections.filter { !databaseManager.isVideoInCollection(videoId: videoId, collectionId: $0.id) }
+    }
+    
+    // 添加视频到指定收藏夹
+    func addVideoToCollections(videoId: String, collectionIds: [String]) -> Bool {
+        var success = true
+        for collectionId in collectionIds {
+            if !databaseManager.addVideoToCollection(videoId: videoId, collectionId: collectionId) {
+                success = false
+            }
+        }
+        return success
+    }
+}
+
+extension VideoViewModel {
+    // 获取视频所在的收藏夹
+    func getCollectionsContaining(videoId: String) -> [VideoCollection] {
+        let allCollections = getCollections()
+        return allCollections.filter { databaseManager.isVideoInCollection(videoId: videoId, collectionId: $0.id) }
+    }
+    
+    // 从所有收藏夹中移除视频
+    func removeVideoFromAllCollections(videoId: String) -> Bool {
+        let collections = getCollectionsContaining(videoId: videoId)
+        var success = true
+        for collection in collections {
+            if !databaseManager.removeVideoFromCollection(videoId: videoId, collectionId: collection.id) {
+                success = false
+            }
+        }
+        return success
     }
 }
