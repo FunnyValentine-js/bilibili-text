@@ -10,11 +10,22 @@ import SwiftUI
 @main
 struct bililiApp: App {
     @State private var showWelcome = true
+    @StateObject var viewModel: VideoViewModel
+    
+    init() {
+        let databasePath = NSSearchPathForDirectoriesInDomains(
+            .documentDirectory,
+            .userDomainMask,
+            true
+        ).first! + "/videos.db"
+        _viewModel = StateObject(wrappedValue: VideoViewModel(databasePath: databasePath))
+    }
     var body: some Scene {
         WindowGroup {
             Group {
                 ContentView()
             }
+            .environmentObject(viewModel)
             .overlay {
                 if showWelcome {
                     WelcomeView {

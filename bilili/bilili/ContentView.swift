@@ -31,13 +31,13 @@ struct ContentView: View {
                 
                 VStack {
                     Spacer()
-                    // Custom TabBar
+                    
                     CustomTabBar(selectedTab: $selectedTab)
                         .padding(.bottom, 0)
                 }
                 .ignoresSafeArea()
                 .edgesIgnoringSafeArea(.top)
-                .edgesIgnoringSafeArea(.bottom) // Ensures the TabBar stays at the bottom
+                .edgesIgnoringSafeArea(.bottom) 
             }
         }
     }

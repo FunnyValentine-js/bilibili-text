@@ -11,7 +11,8 @@ struct ProfileView: View {
     @State private var isPickerPresented = false
     @State private var selectedImage: UIImage?
     @State private var showLogoutAlert = false // 控制退出确认弹窗
-
+    @EnvironmentObject var viewModel: VideoViewModel
+    
     init() {
         // 设置导航栏的背景颜色
         let appearance = UINavigationBarAppearance()
