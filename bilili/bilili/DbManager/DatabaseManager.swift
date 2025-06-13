@@ -56,7 +56,7 @@ class DatabaseManager {
         }
         
         let insertQuery = """
-        INSERT INTO Videos (id, isCoin, isCoinCount, isCollect, isCollectCount, isDislike, isLike, isLikeCount, thumbPhoto, title, upDataAvator, upDataFans, upDataIsFollow, upDataName, upDataUid, upDataVideoCount)
+        INSERT OR REPLACE INTO Videos (id, isCoin, isCoinCount, isCollect, isCollectCount, isDislike, isLike, isLikeCount, thumbPhoto, title, upDataAvator, upDataFans, upDataIsFollow, upDataName, upDataUid, upDataVideoCount)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
         """
         
@@ -223,14 +223,15 @@ extension DatabaseManager {
 
 extension DatabaseManager {
     // 创建收藏夹表
-     func createCollectionsTable() {
-        let createTableQuery = """
+    func createCollectionsTable() {
+        let createCollectionsTableQuery = """
         CREATE TABLE IF NOT EXISTS Collections (
             id TEXT PRIMARY KEY,
             name TEXT NOT NULL,
             createdAt TEXT NOT NULL
         );
-        
+        """
+        let createCollectionItemsTableQuery = """
         CREATE TABLE IF NOT EXISTS CollectionItems (
             id TEXT PRIMARY KEY,
             collectionId TEXT NOT NULL,
@@ -242,18 +243,28 @@ extension DatabaseManager {
         """
         
         var statement: OpaquePointer?
-        if sqlite3_prepare_v2(db, createTableQuery, -1, &statement, nil) != SQLITE_OK {
-            print("创建收藏夹表格失败: \(String(cString: sqlite3_errmsg(db)))")
+        // 创建 Collections 表
+        if sqlite3_prepare_v2(db, createCollectionsTableQuery, -1, &statement, nil) != SQLITE_OK {
+            print("创建Collections表格失败: \(String(cString: sqlite3_errmsg(db)))")
         } else {
             if sqlite3_step(statement) != SQLITE_DONE {
-                print("创建收藏夹表格失败: \(String(cString: sqlite3_errmsg(db)))")
+                print("创建Collections表格失败: \(String(cString: sqlite3_errmsg(db)))")
+            }
+        }
+        sqlite3_finalize(statement)
+        // 创建 CollectionItems 表
+        if sqlite3_prepare_v2(db, createCollectionItemsTableQuery, -1, &statement, nil) != SQLITE_OK {
+            print("创建CollectionItems表格失败: \(String(cString: sqlite3_errmsg(db)))")
+        } else {
+            if sqlite3_step(statement) != SQLITE_DONE {
+                print("创建CollectionItems表格失败: \(String(cString: sqlite3_errmsg(db)))")
             }
         }
         sqlite3_finalize(statement)
     }
     
     // 初始化时调用
-     func setupCollections() {
+    func setupCollections() {
         createCollectionsTable()
         // 确保有一个默认收藏夹
         if getCollections().isEmpty {
@@ -485,4 +496,83 @@ extension DatabaseManager {
         
         return success
     }
+    
+    /// 更新视频状态
+    /// - Parameters:
+    ///   - id: 视频id
+    ///   - isLike: 点赞状态（可选）
+    ///   - isDislike: 不喜欢状态（可选）
+    ///   - isCoin: 投币状态（可选）
+    ///   - isCollect: 收藏状态（可选）
+    ///   - isFollow: 关注状态（可选，更新upDataIsFollow字段）
+    func updateVideoStatus(id: String, isLike: Bool? = nil, isDislike: Bool? = nil, isCoin: Bool? = nil, isCollect: Bool? = nil, isFollow: Bool? = nil) {
+        var updates: [String] = []
+        if let isLike = isLike { updates.append("isLike = \(isLike ? 1 : 0)") }
+        if let isDislike = isDislike { updates.append("isDislike = \(isDislike ? 1 : 0)") }
+        if let isCoin = isCoin { updates.append("isCoin = \(isCoin ? 1 : 0)") }
+        if let isCollect = isCollect { updates.append("isCollect = \(isCollect ? 1 : 0)") }
+        if let isFollow = isFollow { updates.append("upDataIsFollow = \(isFollow ? 1 : 0)") }
+        guard !updates.isEmpty else { return }
+        let sql = "UPDATE Videos SET \(updates.joined(separator: ", ")) WHERE id = ?;"
+        print("即将执行SQL: \(sql)")
+        print("参数id: \(id)")
+        // 更新前打印
+        if let before = fetchVideoById(id: id) {
+            print("更新前: ", before)
+        } else {
+            print("更新前: 未找到该视频")
+        }
+        var statement: OpaquePointer?
+        if sqlite3_prepare_v2(db, sql, -1, &statement, nil) == SQLITE_OK {
+            sqlite3_bind_text(statement, 1, (id as NSString).utf8String, -1, nil)
+            if sqlite3_step(statement) != SQLITE_DONE {
+                print("更新视频状态失败: \(String(cString: sqlite3_errmsg(db)))")
+            } else {
+                print("更新成功，受影响行数: \(sqlite3_changes(db))")
+            }
+        } else {
+            print("SQL预处理失败: \(String(cString: sqlite3_errmsg(db)))")
+        }
+        sqlite3_finalize(statement)
+        // 更新后打印
+        if let after = fetchVideoById(id: id) {
+            print("更新后: ", after)
+        } else {
+            print("更新后: 未找到该视频")
+        }
+    }
+
+    /// 根据id查找视频（调试用）
+    func fetchVideoById(id: String) -> Video? {
+        let query = "SELECT * FROM Videos WHERE id = ?;"
+        var statement: OpaquePointer?
+        var video: Video? = nil
+        if sqlite3_prepare_v2(db, query, -1, &statement, nil) == SQLITE_OK {
+            sqlite3_bind_text(statement, 1, (id as NSString).utf8String, -1, nil)
+            if sqlite3_step(statement) == SQLITE_ROW {
+                let id = String(cString: sqlite3_column_text(statement, 0))
+                let isCoin = sqlite3_column_int(statement, 1) != 0
+                let isCoinCount = Int(sqlite3_column_int(statement, 2))
+                let isCollect = sqlite3_column_int(statement, 3) != 0
+                let isCollectCount = Int(sqlite3_column_int(statement, 4))
+                let isDislike = sqlite3_column_int(statement, 5) != 0
+                let isLike = sqlite3_column_int(statement, 6) != 0
+                let isLikeCount = Int(sqlite3_column_int(statement, 7))
+                let thumbPhoto = String(cString: sqlite3_column_text(statement, 8))
+                let title = String(cString: sqlite3_column_text(statement, 9))
+                let upDataAvator = String(cString: sqlite3_column_text(statement, 10))
+                let upDataFans = Int(sqlite3_column_int(statement, 11))
+                let upDataIsFollow = sqlite3_column_int(statement, 12) != 0
+                let upDataName = String(cString: sqlite3_column_text(statement, 13))
+                let upDataUid = String(cString: sqlite3_column_text(statement, 14))
+                let upDataVideoCount = Int(sqlite3_column_int(statement, 15))
+                let upData = UpData(avator: upDataAvator, fans: upDataFans, isFollow: upDataIsFollow, name: upDataName, uid: upDataUid, videoCount: upDataVideoCount)
+                video = Video(id: id, isCoin: isCoin, isCoinCount: isCoinCount, isCollect: isCollect, isCollectCount: isCollectCount, isDislike: isDislike, isLike: isLike, isLikeCount: isLikeCount, thumbPhoto: thumbPhoto, title: title, upData: upData)
+            }
+        }
+        sqlite3_finalize(statement)
+        return video
+    }
 }
+
+

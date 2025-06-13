@@ -9,7 +9,7 @@ import SwiftUI
 
 //struct VideoRowItemView: View {
 //    let video: Video
-//    
+//
 //    var body: some View {
 //        VStack(alignment: .leading, spacing: 8) {
 //            HStack {
@@ -26,13 +26,13 @@ import SwiftUI
 //                }
 //                .frame(width: 120, height: 80)
 //                .cornerRadius(4)
-//                
+//
 //                VStack(alignment: .leading, spacing: 4) {
 //                    // 视频标题
 //                    Text(video.title)
 //                        .font(.subheadline)
 //                        .lineLimit(2)
-//                    
+//
 //                    // UP主信息
 //                    HStack {
 //                        AsyncImage(url: URL(string: video.upData.avator)) { phase in
@@ -47,12 +47,12 @@ import SwiftUI
 //                        }
 //                        .frame(width: 20, height: 20)
 //                        .clipShape(Circle())
-//                        
+//
 //                        Text(video.upData.name)
 //                            .font(.caption)
 //                            .foregroundColor(.gray)
 //                    }
-//                    
+//
 //                    // 互动数据
 //                    HStack(spacing: 16) {
 //                        Label("\(video.isLikeCount)", systemImage: "hand.thumbsup")

@@ -28,6 +28,9 @@ struct RecommendView: View {
                     LazyVGrid(columns: columns, spacing: 15) {
                         ForEach(viewModel.videos) { video in
                             VideoCellView(video: video)
+                                .onAppear {
+                                    print("视频id: \(video.id), 收藏: \(video.isCollect), 点赞: \(video.isLike)")
+                                }
                         }
                     }
                     .padding()
