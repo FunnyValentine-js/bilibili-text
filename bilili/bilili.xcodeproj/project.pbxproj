@@ -18,9 +18,22 @@
 		D1EBD4772DE34C0000CE6CAB /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		2DC9EA5B2DFBA389005CC46A /* Exceptions for "bilili" folder in "bilili" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = D1EBD2C62DE06E8500CE6CAB /* bilili */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		D1EBD2C92DE06E8500CE6CAB /* bilili */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				2DC9EA5B2DFBA389005CC46A /* Exceptions for "bilili" folder in "bilili" target */,
+			);
 			path = bilili;
 			sourceTree = "<group>";
 		};
@@ -279,6 +292,8 @@
 				DEVELOPMENT_ASSET_PATHS = "\"bilili/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = bilili/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "哔哩哔哩";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -307,6 +322,8 @@
 				DEVELOPMENT_ASSET_PATHS = "\"bilili/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = bilili/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "哔哩哔哩";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

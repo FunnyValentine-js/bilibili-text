@@ -1,21 +1,51 @@
 import SwiftUI
 import AVKit
 
+// Toast 视图
+struct Toast: View {
+    let message: String
+    let isSuccess: Bool
+    
+    var body: some View {
+        HStack {
+            Image(systemName: isSuccess ? "checkmark.circle.fill" : "xmark.circle.fill")
+                .foregroundColor(isSuccess ? .green : .red)
+            Text(message)
+                .foregroundColor(.white)
+        }
+        .padding()
+        .background(Color.black.opacity(0.7))
+        .cornerRadius(10)
+    }
+}
+
 struct VideoDetailView: View {
-    @EnvironmentObject var viewModel: VideoViewModel
     let video: Video
+    @State private var currentVideo: Video
     @State var isFollowing: Bool
     @State var isLiking: Bool
     @State var isDisliking: Bool
     @State var isCoining: Bool
     @State var isCollectwing: Bool
-    @State private var showCollectionSheet = false
     
+    // Toast 相关状态
+    @State private var showToast = false
+    @State private var toastMessage = ""
+    @State private var isSuccess = false
+    
+    @StateObject private var viewModel = VideoViewModel(
+        databasePath: NSSearchPathForDirectoriesInDomains(
+            .documentDirectory,
+            .userDomainMask,
+            true
+        ).first! + "/videos.db"
+    )
     @StateObject private var playerVM: PlayerViewModel
     @Environment(\.presentationMode) var presentationMode
     
     init(video: Video, isFollowing: Bool, isLiking: Bool, isDisliking: Bool, isCoining: Bool, isCollectwing: Bool) {
         self.video = video
+        self._currentVideo = State(initialValue: video)
         self._isFollowing = State(initialValue: isFollowing)
         self._isLiking = State(initialValue: isLiking)
         self._isDisliking = State(initialValue: isDisliking)
@@ -23,6 +53,7 @@ struct VideoDetailView: View {
         self._isCollectwing = State(initialValue: isCollectwing)
         self._playerVM = StateObject(wrappedValue: PlayerViewModel(videoURL: "https://media.w3.org/2010/05/sintel/trailer.mp4"))
     }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 5) {
@@ -96,7 +127,7 @@ struct VideoDetailView: View {
                 userInfoSection
                 
                 // 视频标题
-                Text(video.title)
+                Text(currentVideo.title)
                     .font(.system(size: 20))
                     .fontWeight(.bold)
                     .frame(width: UIScreen.main.bounds.width, alignment: .topLeading)
@@ -112,12 +143,22 @@ struct VideoDetailView: View {
         }
         .ignoresSafeArea()
         .navigationBarHidden(true)
+        .onAppear {
+            if let latest = viewModel.databaseManager.fetchVideoById(id: video.id) {
+                currentVideo = latest
+                isFollowing = latest.upData.isFollow
+                isLiking = latest.isLike
+                isDisliking = latest.isDislike
+                isCoining = latest.isCoin
+                isCollectwing = latest.isCollect
+            }
+        }
     }
     
     // 用户信息区域
     private var userInfoSection: some View {
         HStack {
-            AsyncImage(url: URL(string: video.upData.avator)) { phase in
+            AsyncImage(url: URL(string: currentVideo.upData.avator)) { phase in
                 switch phase {
                 case .empty:
                     ProgressView()
@@ -139,7 +180,7 @@ struct VideoDetailView: View {
             .padding(.horizontal, 10)
             
             VStack(alignment: .leading) {
-                Text(video.upData.name)
+                Text(currentVideo.upData.name)
                     .font(.headline)
                     .foregroundColor(.pink)
                 
@@ -147,7 +188,7 @@ struct VideoDetailView: View {
                     Text("11.4万粉丝")
                         .font(.footnote)
                         .foregroundColor(.gray)
-                    Text("\(video.upData.videoCount)视频")
+                    Text("\(currentVideo.upData.videoCount)视频")
                         .font(.footnote)
                         .foregroundColor(.gray)
                 }
@@ -157,13 +198,15 @@ struct VideoDetailView: View {
             
             Button(action: {
                 isFollowing.toggle()
+                showToast(message: isFollowing ? "关注成功" : "已取消关注", isSuccess: true)
+                viewModel.databaseManager.updateVideoStatus(id: currentVideo.id, isFollow: isFollowing)
             }) {
                 Text(isFollowing ? "已关注" : "关注")
                     .font(.headline)
                     .foregroundColor(isFollowing ? Color.black : Color.white)
                     .frame(width: 70, height: 15)
                     .padding(7)
-                    .background(isFollowing ? Color.gray : Color.pink)
+                    .background(isFollowing ? Color.gray : Color("mainColor"))
                     .clipShape(Capsule())
                     .padding(.horizontal, 10)
             }
@@ -173,102 +216,152 @@ struct VideoDetailView: View {
     
     // 互动按钮区域
     private var interactionButtons: some View {
-        HStack {
-            Button(action: {
-                isLiking.toggle()
-            }) {
+        ZStack {
+            HStack {
+                Button(action: {
+                    isLiking.toggle()
+                    if isLiking && isDisliking {
+                        isDisliking = false
+                        viewModel.databaseManager.updateVideoStatus(id: currentVideo.id, isDislike: false)
+                    }
+                    showToast(message: isLiking ? "点赞成功" : "取消点赞", isSuccess: true)
+                    viewModel.databaseManager.updateVideoStatus(id: currentVideo.id, isLike: isLiking)
+                    if let latest = viewModel.databaseManager.fetchVideoById(id: currentVideo.id) {
+                        currentVideo = latest
+                    }
+                }) {
+                    VStack {
+                        Image(systemName: "hand.thumbsup.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .foregroundColor(isLiking ? Color("mainColor") : Color.gray)
+                            .frame(width: 24)
+                        Text(isLiking ? formatLikeCount(currentVideo.isLikeCount + 1) : formatLikeCount(currentVideo.isLikeCount))
+                            .font(.system(size: 12))
+                            .frame(width: 48)
+                            .multilineTextAlignment(.center)
+                    }
+                }
+                .padding(.leading, 20)
+                
+                Spacer()
+                
+                Button(action: {
+                    isDisliking.toggle()
+                    if isDisliking && isLiking {
+                        isLiking = false
+                        viewModel.databaseManager.updateVideoStatus(id: currentVideo.id, isLike: false)
+                    }
+                    showToast(message: isDisliking ? "已标记不喜欢" : "取消不喜欢", isSuccess: true)
+                    viewModel.databaseManager.updateVideoStatus(id: currentVideo.id, isDislike: isDisliking)
+                    if let latest = viewModel.databaseManager.fetchVideoById(id: currentVideo.id) {
+                        currentVideo = latest
+                    }
+                }) {
+                    VStack {
+                        Image(systemName: "hand.thumbsdown.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .foregroundColor(isDisliking ? Color("mainColor") : Color.gray)
+                            .frame(width: 24)
+                        Text("不喜欢")
+                            .font(.system(size: 12))
+                            .frame(width: 48)
+                            .multilineTextAlignment(.center)
+                    }
+                }
+                
+                Spacer()
+                
+                Button(action: {
+                    isCoining.toggle()
+                    showToast(message: isCoining ? "投币成功" : "取消投币", isSuccess: true)
+                    viewModel.databaseManager.updateVideoStatus(id: currentVideo.id, isCoin: isCoining)
+                    if let latest = viewModel.databaseManager.fetchVideoById(id: currentVideo.id) {
+                        currentVideo = latest
+                    }
+                }) {
+                    VStack {
+                        Image(systemName: "bitcoinsign.circle.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .foregroundColor(isCoining ? Color("mainColor") : Color.gray)
+                            .frame(width: 24)
+                        Text(isCoining ? formatLikeCount(currentVideo.isCoinCount + 1) : formatLikeCount(currentVideo.isCoinCount))
+                            .font(.system(size: 12))
+                            .frame(width: 48)
+                            .multilineTextAlignment(.center)
+                    }
+                }
+                
+                Spacer()
+                
+                Button(action: {
+                    isCollectwing.toggle()
+                    showToast(message: isCollectwing ? "收藏成功" : "取消收藏", isSuccess: true)
+                    viewModel.databaseManager.updateVideoStatus(id: currentVideo.id, isCollect: isCollectwing)
+                    if let latest = viewModel.databaseManager.fetchVideoById(id: currentVideo.id) {
+                        currentVideo = latest
+                    }
+                }) {
+                    VStack {
+                        Image(systemName: "star.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .foregroundColor(isCollectwing ? Color("mainColor") : Color.gray)
+                            .frame(width: 24)
+                        Text(isCollectwing ? formatLikeCount(currentVideo.isCollectCount + 1) : formatLikeCount(currentVideo.isCollectCount))
+                            .font(.system(size: 12))
+                            .frame(width: 48)
+                            .multilineTextAlignment(.center)
+                    }
+                }
+                
+                Spacer()
+                
+                Button(action: {
+                    showToast(message: "分享功能开发中", isSuccess: false)
+                }) {
+                    VStack {
+                        Image(systemName: "arrowshape.turn.up.forward.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .foregroundColor(Color.gray)
+                            .frame(width: 24)
+                        Text("分享")
+                            .font(.system(size: 12))
+                            .frame(width: 48)
+                            .multilineTextAlignment(.center)
+                    }
+                }
+                .padding(.trailing, 20)
+            }
+            .padding(.top, 10)
+            
+            // Toast 显示
+            if showToast {
                 VStack {
-                    Image(systemName: "hand.thumbsup.fill")
-                        .resizable()
-                        .scaledToFit()
-                        .foregroundColor(isLiking ? Color.pink : Color.gray)
-                        .frame(width: 30)
-                    Text(isLiking ? formatLikeCount(video.isLikeCount + 1) : formatLikeCount(video.isLikeCount))
-                        .font(.system(size: 10))
-                        .frame(width: 30)
+                    Spacer()
+                    Toast(message: toastMessage, isSuccess: isSuccess)
+                        .transition(.move(edge: .bottom))
+                        .animation(.easeInOut, value: showToast)
                 }
             }
-            .padding(.leading, 20)
-            
-            Spacer()
-            
-            Button(action: {
-                isDisliking.toggle()
-            }) {
-                VStack {
-                    Image(systemName: "hand.thumbsdown.fill")
-                        .resizable()
-                        .scaledToFit()
-                        .foregroundColor(isDisliking ? Color.pink : Color.gray)
-                        .frame(width: 30)
-                    Text("不喜欢")
-                        .font(.system(size: 10))
-                        .frame(width: 40)
-                }
-            }
-            
-            Spacer()
-            
-            Button(action: {
-                isCoining.toggle()
-            }) {
-                VStack {
-                    Image(systemName: "bitcoinsign.circle.fill")
-                        .resizable()
-                        .scaledToFit()
-                        .foregroundColor(isCoining ? Color.pink : Color.gray)
-                        .frame(width: 30)
-                    Text(isCoining ? formatLikeCount(video.isCoinCount + 1) : formatLikeCount(video.isCoinCount))
-                        .font(.system(size: 10))
-                        .frame(width: 30)
-                }
-            }
-            
-            Spacer()
-            
-            //收藏按钮
-            // 更新收藏按钮
-            Button(action: {
-                showCollectionSheet = true
-            }) {
-                VStack {
-                    Image(systemName: viewModel.isVideoInCollection(videoId: video.id) ? "star.fill" : "star")
-                        .resizable()
-                        .scaledToFit()
-                        .foregroundColor(viewModel.isVideoInCollection(videoId: video.id) ? .pink : .gray)
-                        .frame(width: 30)
-                    Text(formatLikeCount(viewModel.isVideoInCollection(videoId: video.id) ? video.isCollectCount + 1 : video.isCollectCount))
-                        .font(.system(size: 10))
-                        .frame(width: 30)
-                }
-            }
-            .sheet(isPresented: $showCollectionSheet) {
-                CollectionSelectionView(
-                    isPresented: $showCollectionSheet,
-                    videoId: video.id
-                )
-                .environmentObject(viewModel)
-            }
-            
-            Spacer()
-            
-            Button(action: {
-                // 分享操作
-            }) {
-                VStack {
-                    Image(systemName: "arrowshape.turn.up.forward.fill")
-                        .resizable()
-                        .scaledToFit()
-                        .foregroundColor(Color.gray)
-                        .frame(width: 30)
-                    Text("分享")
-                        .font(.system(size: 10))
-                        .frame(width: 30)
-                }
-            }
-            .padding(.trailing, 20)
         }
-        .padding(.top, 10)
+    }
+    
+    // 显示 Toast 的辅助方法
+    private func showToast(message: String, isSuccess: Bool) {
+        toastMessage = message
+        self.isSuccess = isSuccess
+        showToast = true
+        
+        // 2秒后自动隐藏
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            withAnimation {
+                showToast = false
+            }
+        }
     }
     
     // 自定义控制层

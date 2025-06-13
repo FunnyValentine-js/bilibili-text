@@ -49,14 +49,14 @@ class VideoViewModel: ObservableObject {
         guard !hasInitializedData else { return }
         isLoading = true
         
-        let urlString = "http://127.0.0.1:4523/m1/6447670-6145983-default/user/video/recommend?page=0&pagesize=8"
+        let urlString = "https://apiv1.ssgpt.chat/user/log/psw"
         guard let url = URL(string: urlString) else {
             isLoading = false
             return
         }
         
         var request = URLRequest(url: url, timeoutInterval: Double.infinity)
-        request.addValue("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiIxODk2MDkzNTUwMCJ9.JV85gnurhGUCeK7D_DnG3NHznpABmSqtse3oNw1RDoc", forHTTPHeaderField: "Authorization")
+     //   request.addValue("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiIxODk2MDkzNTUwMCJ9.JV85gnurhGUCeK7D_DnG3NHznpABmSqtse3oNw1RDoc", forHTTPHeaderField: "Authorization")
         request.httpMethod = "GET"
         
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
@@ -264,3 +264,4 @@ extension VideoViewModel {
         return success
     }
 }
+
