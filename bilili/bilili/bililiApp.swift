@@ -11,6 +11,7 @@ import SwiftUI
 struct bililiApp: App {
     @State private var showWelcome = true
     @StateObject var viewModel: VideoViewModel
+    @StateObject var userViewModel = UserViewModel()
     
     init() {
         let databasePath = NSSearchPathForDirectoriesInDomains(
@@ -26,6 +27,7 @@ struct bililiApp: App {
                 ContentView()
             }
             .environmentObject(viewModel)
+            .environmentObject(userViewModel)
             .overlay {
                 if showWelcome {
                     WelcomeView {

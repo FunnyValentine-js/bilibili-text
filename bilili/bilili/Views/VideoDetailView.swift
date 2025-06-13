@@ -202,11 +202,11 @@ struct VideoDetailView: View {
                 viewModel.databaseManager.updateVideoStatus(id: currentVideo.id, isFollow: isFollowing)
             }) {
                 Text(isFollowing ? "已关注" : "关注")
-                    .font(.headline)
+                    .font(.callout)
                     .foregroundColor(isFollowing ? Color.black : Color.white)
                     .frame(width: 70, height: 15)
                     .padding(7)
-                    .background(isFollowing ? Color.gray : Color("mainColor"))
+                    .background(isFollowing ? Color.liteGray : Color("mainColor"))
                     .clipShape(Capsule())
                     .padding(.horizontal, 10)
             }

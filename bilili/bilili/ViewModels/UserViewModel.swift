@@ -8,6 +8,13 @@
 import Foundation
 import SwiftUI
 
+/// 登录接口响应结构体
+struct LoginResponse: Codable {
+    let code: Int
+    let msg: String
+    let name: String?
+    let avatar: String?
+}
 
 class UserViewModel: ObservableObject {
     @Published var users: [User] = []
@@ -17,7 +24,10 @@ class UserViewModel: ObservableObject {
         // 尝试从UserDefaults加载已登录用户
         if let data = UserDefaults.standard.data(forKey: "currentUser"),
            let user = try? JSONDecoder().decode(User.self, from: data) {
-            currentUser = user
+            
+            DispatchQueue.main.async {
+                self.currentUser = user
+            }
         }
     }
     
@@ -28,7 +38,6 @@ class UserViewModel: ObservableObject {
             return
         }
         
-        // 这里是模拟的登录请求，替换为真实请求
         let parameters = """
         {
             "username": "\(account)",
@@ -37,7 +46,7 @@ class UserViewModel: ObservableObject {
         """
         let postData = parameters.data(using: .utf8)
         
-        guard let url = URL(string: "http://127.0.0.1:4523/m1/6447670-6145983-default/user/log/psw") else {
+        guard let url = URL(string: "https://apiv1.ssgpt.chat/login") else {
             completion(false, "无效的 URL")
             return
         }
@@ -58,15 +67,28 @@ class UserViewModel: ObservableObject {
                 return
             }
 
-            if let responseString = String(data: data, encoding: .utf8) {
-                print("响应数据: \(responseString)")
-                // 假设登录成功，设置currentUser
-                let user = User(name: account, password: password,avatar: nil)
-                self.currentUser = user
-                self.saveCurrentUser() // 保存当前用户
-                completion(true, nil)
-            } else {
-                completion(false, "登录失败")
+            // 打印接口返回的原始数据
+            print("接口响应数据: \(String(data: data, encoding: .utf8) ?? "")")
+
+            do {
+                let loginResponse = try JSONDecoder().decode(LoginResponse.self, from: data)
+                if loginResponse.code == 200,
+                   let name = loginResponse.name {
+                    let user = User(name: name, password: password, avatar: loginResponse.avatar)
+                    DispatchQueue.main.async {
+                        self.currentUser = user
+                        self.saveCurrentUser()
+                        completion(true, nil)
+                    }
+                } else {
+                    DispatchQueue.main.async {
+                        completion(false, loginResponse.msg)
+                    }
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    completion(false, "解析响应失败")
+                }
             }
         }
 
@@ -81,25 +103,19 @@ class UserViewModel: ObservableObject {
         }
     }
     
-    // 保存头像
-    func saveAvatar(_ image: UIImage) {
-        if let imageData = image.jpegData(compressionQuality: 1.0) {
-            currentUser?.avatar = imageData
-            saveCurrentUser()
-        }
-    }
-    
     // 获取头像
-    func getAvatar() -> UIImage? {
-        guard let avatarData = currentUser?.avatar else {
+    func getAvatar() -> URL? {
+        guard let avatarUrl = currentUser?.avatar else {
             return nil
         }
-        return UIImage(data: avatarData)
+        return URL(string: avatarUrl)
     }
     
     // 退出登录
     func logout() {
-        currentUser = nil
-        UserDefaults.standard.removeObject(forKey: "currentUser")
+        DispatchQueue.main.async {
+            self.currentUser = nil
+            UserDefaults.standard.removeObject(forKey: "currentUser")
+        }
     }
 }

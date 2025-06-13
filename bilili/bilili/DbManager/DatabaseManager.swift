@@ -575,4 +575,60 @@ extension DatabaseManager {
     }
 }
 
+extension DatabaseManager {
+    /// 查询某个收藏夹下已收藏视频的数量
+    func getCollectionVideoCount(collectionId: String) -> Int {
+        let query = "SELECT COUNT(*) FROM CollectionItems WHERE collectionId = ?;"
+        var statement: OpaquePointer?
+        var count = 0
+        if sqlite3_prepare_v2(db, query, -1, &statement, nil) == SQLITE_OK {
+            sqlite3_bind_text(statement, 1, (collectionId as NSString).utf8String, -1, nil)
+            if sqlite3_step(statement) == SQLITE_ROW {
+                count = Int(sqlite3_column_int(statement, 0))
+            }
+        }
+        sqlite3_finalize(statement)
+        return count
+    }
+    
+    /// 获取所有已收藏的视频（不考虑收藏夹）
+    func getAllCollectedVideos() -> [Video] {
+        let query = "SELECT * FROM Videos WHERE isCollect = 1;"
+        var statement: OpaquePointer?
+        var videos: [Video] = []
+        
+        if sqlite3_prepare_v2(db, query, -1, &statement, nil) == SQLITE_OK {
+            while sqlite3_step(statement) == SQLITE_ROW {
+                let id = String(cString: sqlite3_column_text(statement, 0))
+                let isCoin = sqlite3_column_int(statement, 1) != 0
+                let isCoinCount = Int(sqlite3_column_int(statement, 2))
+                let isCollect = sqlite3_column_int(statement, 3) != 0
+                let isCollectCount = Int(sqlite3_column_int(statement, 4))
+                let isDislike = sqlite3_column_int(statement, 5) != 0
+                let isLike = sqlite3_column_int(statement, 6) != 0
+                let isLikeCount = Int(sqlite3_column_int(statement, 7))
+                let thumbPhoto = String(cString: sqlite3_column_text(statement, 8))
+                let title = String(cString: sqlite3_column_text(statement, 9))
+                
+                // UpData字段
+                let upDataAvator = String(cString: sqlite3_column_text(statement, 10))
+                let upDataFans = Int(sqlite3_column_int(statement, 11))
+                let upDataIsFollow = sqlite3_column_int(statement, 12) != 0
+                let upDataName = String(cString: sqlite3_column_text(statement, 13))
+                let upDataUid = String(cString: sqlite3_column_text(statement, 14))
+                let upDataVideoCount = Int(sqlite3_column_int(statement, 15))
+                
+                let upData = UpData(avator: upDataAvator, fans: upDataFans, isFollow: upDataIsFollow, name: upDataName, uid: upDataUid, videoCount: upDataVideoCount)
+                
+                let video = Video(id: id, isCoin: isCoin, isCoinCount: isCoinCount, isCollect: isCollect, isCollectCount: isCollectCount, isDislike: isDislike, isLike: isLike, isLikeCount: isLikeCount, thumbPhoto: thumbPhoto, title: title, upData: upData)
+                videos.append(video)
+            }
+        }
+        sqlite3_finalize(statement)
+        return videos
+    }
+}
+
+
+
 

@@ -11,9 +11,9 @@ struct User: Identifiable, Codable{
     let id = UUID()
     let name: String
     let password: String
-    var avatar: Data?
+    var avatar: String? // 头像链接
     
-    init(id: UUID = UUID(), name: String, password: String, avatar: Data? = nil) {
+    init(id: UUID = UUID(), name: String, password: String, avatar: String? = nil) {
         //self.id = id
         self.name = name
         self.password = password

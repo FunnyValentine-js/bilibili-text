@@ -73,53 +73,69 @@ struct CollectionView: View {
     @State private var showingNewCollectionSheet = false
     @State private var newCollectionName = ""
     @State private var collections: [VideoCollection] = []
+    @State private var showDefaultAlert = false
     
     var body: some View {
-        NavigationView {
-            List {
-                // 确保默认收藏夹始终显示在最前面
-                ForEach(collections.sorted { $0.name == "默认收藏夹" && $1.name != "默认收藏夹" }) { collection in
-                    NavigationLink(destination: CollectionDetailView(collection: collection)) {
-                        HStack {
-                            Image(systemName: collection.name == "默认收藏夹" ? "star.fill" : "folder.fill")
-                                .foregroundColor(collection.name == "默认收藏夹" ? .yellow : .blue)
-                            Text(collection.name)
-                            Spacer()
-                            Text("\(collection.videoCount)")
-                                .foregroundColor(.gray)
-                        }
+        List {
+            // 确保默认收藏夹始终显示在最前面
+            ForEach(collections.sorted { $0.name == "默认收藏夹" && $1.name != "默认收藏夹" }) { collection in
+                NavigationLink(destination: CollectionDetailView(collection: collection)) {
+                    HStack {
+                        Image(systemName: collection.name == "默认收藏夹" ? "star.fill" : "folder.fill")
+                            .foregroundColor(collection.name == "默认收藏夹" ? .yellow : .blue)
+                        Text(collection.name)
+                        Spacer()
+                        Text("\(collection.videoCount)")
+                            .foregroundColor(.gray)
                     }
                 }
-                .onDelete(perform: deleteCollections)
+                .frame(height: 70)
             }
-            .navigationTitle("我的收藏夹")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: {
-                        showingNewCollectionSheet = true
-                    }) {
-                        Image(systemName: "plus")
-                    }
+            .onDelete(perform: deleteCollections)
+        }
+        .navigationTitle("收藏")
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action: {
+                    showingNewCollectionSheet = true
+                }) {
+                    Image(systemName: "plus")
                 }
             }
-            .sheet(isPresented: $showingNewCollectionSheet) {
-                NewCollectionView(isPresented: $showingNewCollectionSheet)
-            }
-            .onAppear {
-                refreshCollections()
-            }
+        }
+        .sheet(isPresented: $showingNewCollectionSheet) {
+            NewCollectionView(isPresented: $showingNewCollectionSheet)
+        }
+        .onAppear {
+            refreshCollections()
+        }
+        .alert(isPresented: $showDefaultAlert) {
+            Alert(title: Text("无法删除"), message: Text("默认收藏夹不能删除！"), dismissButton: .default(Text("确定")))
         }
     }
     
     private func refreshCollections() {
         collections = viewModel.getCollections()
+        for index in collections.indices {
+            let collection = collections[index]
+            let count: Int
+            if collection.name == "默认收藏夹" {
+                count = viewModel.databaseManager.getAllCollectedVideos().count
+            } else {
+                count = viewModel.databaseManager.getCollectionVideoCount(collectionId: collection.id)
+            }
+            print("收藏夹 \(collection.name) 视频数量: \(count)")
+            collections[index].videoCount = count
+        }
     }
     
     private func deleteCollections(at offsets: IndexSet) {
         for index in offsets {
             let collection = collections[index]
             // 不能删除默认收藏夹
-            if collection.name != "默认收藏夹" {
+            if collection.name == "默认收藏夹" {
+                showDefaultAlert = true
+            } else {
                 viewModel.databaseManager.deleteCollection(collectionId: collection.id)
             }
         }
