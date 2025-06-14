@@ -82,6 +82,8 @@ struct LoginView: View {
             // 点击空白处恢复电视图标
             isPasswordFieldFocused = false
         }
+        .navigationTitle("登录")
+//        .navigationBarTitleDisplayMode(.large)
     }
     
     // 登录请求（使用 UserViewModel 进行登录）

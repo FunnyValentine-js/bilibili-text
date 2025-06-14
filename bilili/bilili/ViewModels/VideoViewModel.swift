@@ -49,7 +49,7 @@ class VideoViewModel: ObservableObject {
         guard !hasInitializedData else { return }
         isLoading = true
         
-        let urlString = "https://apiv1.ssgpt.chat/user/log/psw"
+        let urlString = "https://apiv1.ssgpt.chat/videos"
         guard let url = URL(string: urlString) else {
             isLoading = false
             return
