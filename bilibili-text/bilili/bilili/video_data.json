@@ -1,0 +1,166 @@
+{
+    "code": 200,
+    "msg": "操作成功",
+    "data": [
+        {
+            "id": "a542ade1-80f8-433f-b653-4084e9e71b07",
+            "title": "滴水之恩😭涌泉相报🤣",
+            "isLike": false,
+            "isLikeCount": 87000,
+            "isDislike": true,
+            "isCollect": false,
+            "isCollectCount": 4396,
+            "isCoin": true,
+            "isCoinCount": 1985,
+            "thumbPhoto": "https://picsum.photos/400/300",
+            "upData": {
+                "name": "醉翁之意在于山水之间",
+                "uid": "34ba1385-055e-4273-a089-86130b1e2268",
+                "fans": 19000,
+                "videoCount": 145,
+                "isFollow": true,
+                "avator": "https://picsum.photos/70"
+            }
+        },
+        {
+            "id": "54392130-4db5-425e-a169-1e458d9b1663",
+            "title": "分享两个一句话的万能prompt",
+            "isLike": true,
+            "isLikeCount": 280,
+            "isDislike": false,
+            "isCollect": true,
+            "isCollectCount": 314,
+            "isCoin": false,
+            "isCoinCount": 64,
+            "thumbPhoto": "https://picsum.photos/400/300",
+            "upData": {
+                "name": "Zhiyong的生成式",
+                "uid": "14119ab8-8c0e-42f5-be15-adb72852b61b",
+                "fans": 1637,
+                "videoCount": 8,
+                "isFollow": false,
+                "avator": "https://picsum.photos/70"
+            }
+        },
+        {
+            "id": "cdd87167-3a65-4f71-aec5-da46f75c3bfe",
+            "title": "汉密尔顿 我命苦的5分钟",
+            "isLike": true,
+            "isLikeCount": 170000,
+            "isDislike": false,
+            "isCollect": false,
+            "isCollectCount": 450000,
+            "isCoin": false,
+            "isCoinCount": 860000,
+            "thumbPhoto": "https://picsum.photos/400/300",
+            "upData": {
+                "name": "Yangsing04",
+                "uid": "d655efb3-2721-42c4-af85-b5447890870e",
+                "fans": 34000,
+                "videoCount": 23,
+                "isFollow": false,
+                "avator": "https://picsum.photos/70"
+            }
+        },
+        {
+            "id": "246058a1-c617-4e45-9616-b4a596a02210",
+            "title": "利用 FSM，解决 Kafka 消息的重复和乱序问题",
+            "isLike": false,
+            "isLikeCount": 187,
+            "isDislike": false,
+            "isCollect": true,
+            "isCollectCount": 527,
+            "isCoin": false,
+            "isCoinCount": 36,
+            "thumbPhoto": "https://picsum.photos/400/300",
+            "upData": {
+                "name": "timdcn",
+                "uid": "986d6c0c-5cc6-4ad5-bb33-278157ecaeac",
+                "fans": 3328,
+                "videoCount": 35,
+                "isFollow": false,
+                "avator": "https://picsum.photos/70"
+            }
+        },
+        {
+            "id": "af014557-401b-413b-a4e4-a17f06657875",
+            "title": "几句是非也无法将我的热情冷却",
+            "isLike": true,
+            "isLikeCount": 9212,
+            "isDislike": true,
+            "isCollect": false,
+            "isCollectCount": 1160,
+            "isCoin": false,
+            "isCoinCount": 1551,
+            "thumbPhoto": "https://picsum.photos/400/300",
+            "upData": {
+                "name": "淮安日记",
+                "uid": "365d9dce-cab6-4aab-94c4-feb7171aae4d",
+                "fans": 175000,
+                "videoCount": 96,
+                "isFollow": true,
+                "avator": "https://picsum.photos/70"
+            }
+        },
+        {
+            "id": "d3311727-9d3c-46f0-bed3-858a97f4660c",
+            "title": "资本被黑的最惨的一次",
+            "isLike": true,
+            "isLikeCount": 28000,
+            "isDislike": false,
+            "isCollect": true,
+            "isCollectCount": 3623,
+            "isCoin": true,
+            "isCoinCount": 721,
+            "thumbPhoto": "https://picsum.photos/400/300",
+            "upData": {
+                "name": "王者荣耀梦钼",
+                "uid": "b8689ddf-b798-44d5-abcb-575c4499ea7e",
+                "fans": 228000,
+                "videoCount": 981,
+                "isFollow": false,
+                "avator": "https://picsum.photos/70"
+            }
+        },
+        {
+            "id": "842186b5-a3a0-4b5f-a7e1-4b8d58ce3ce0",
+            "title": " 越长大，越不爱说实话",
+            "isLike": false,
+            "isLikeCount": 11000,
+            "isDislike": true,
+            "isCollect": false,
+            "isCollectCount": 2702,
+            "isCoin": true,
+            "isCoinCount": 3290,
+            "thumbPhoto": "https://picsum.photos/400/300",
+            "upData": {
+                "name": "Zhan ｜",
+                "uid": "ae7968f5-5563-44e1-be50-b1fcc0adfed9",
+                "fans": 1583000,
+                "videoCount": 139,
+                "isFollow": false,
+                "avator": "https://picsum.photos/70"
+            }
+        },
+        {
+            "id": "d2bc0e6f-94e5-4cd9-9e0a-0bae12e7ca1c",
+            "title": "这，就是北理工！",
+            "isLike": true,
+            "isLikeCount": 24000,
+            "isDislike": false,
+            "isCollect": false,
+            "isCollectCount": 1851,
+            "isCoin": true,
+            "isCoinCount": 1072,
+            "thumbPhoto": "https://picsum.photos/400/300",
+            "upData": {
+                "name": "北京理工大学",
+                "uid": "77062bcb-f063-4c18-b7fc-fd5092c5fac8",
+                "fans": 101000,
+                "videoCount": 226,
+                "isFollow": true,
+                "avator": "https://picsum.photos/70"
+            }
+        }
+    ]
+}
